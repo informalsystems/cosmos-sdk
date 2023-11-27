@@ -371,6 +371,20 @@ func (mr *MockStakingKeeperMockRecorder) GetTokenizeShareRecord(ctx, id interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTokenizeShareRecord", reflect.TypeOf((*MockStakingKeeper)(nil).GetTokenizeShareRecord), ctx, id)
 }
 
+// GetAllTokenizeShareRecords mocks base method.
+func (m *MockStakingKeeper) GetAllTokenizeShareRecords(ctx types.Context) (tokenizeShareRecords []types1.TokenizeShareRecord) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllTokenizeShareRecords", ctx)
+	ret0, _ := ret[0].([]types1.TokenizeShareRecord)
+	return ret0
+}
+
+// GetAllTokenizeShareRecords indicates an expected call of GetAllTokenizeShareRecords.
+func (mr *MockStakingKeeperMockRecorder) GetAllTokenizeShareRecords(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTokenizeShareRecords", reflect.TypeOf((*MockStakingKeeper)(nil).GetAllTokenizeShareRecords), ctx)
+}
+
 // MockStakingHooks is a mock of StakingHooks interface.
 type MockStakingHooks struct {
 	ctrl     *gomock.Controller

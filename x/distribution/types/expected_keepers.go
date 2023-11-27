@@ -53,6 +53,7 @@ type StakingKeeper interface {
 
 	GetTokenizeShareRecordsByOwner(ctx sdk.Context, owner sdk.AccAddress) (tokenizeShareRecords []stakingtypes.TokenizeShareRecord)
 	GetTokenizeShareRecord(ctx sdk.Context, id uint64) (tokenizeShareRecord stakingtypes.TokenizeShareRecord, err error)
+	GetAllTokenizeShareRecords(ctx sdk.Context) (tokenizeShareRecords []stakingtypes.TokenizeShareRecord)
 }
 
 // StakingHooks event hooks for staking validator object (noalias)
