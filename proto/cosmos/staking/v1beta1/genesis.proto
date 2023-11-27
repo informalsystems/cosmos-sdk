@@ -38,6 +38,8 @@ message GenesisState {
   // redelegations defines the redelegations active at genesis.
   repeated Redelegation redelegations = 7 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 
+  bool exported = 8;
+
   // store tokenize share records to provide reward to record owners
   repeated TokenizeShareRecord tokenize_share_records = 9 [(gogoproto.nullable) = false];
 
@@ -53,8 +55,6 @@ message GenesisState {
 
   // tokenize shares locks at genesis
   repeated TokenizeShareLock tokenize_share_locks = 12 [(gogoproto.nullable) = false];
-
-  bool exported = 8;
 }
 
 // TokenizeSharesLock required for specifying account locks at genesis
