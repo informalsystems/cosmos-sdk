@@ -48,6 +48,8 @@ service Msg {
 
   // UnbondValidator defines a method for performing the status transition for a validator
   // from bonded to unbonding
+  // This allows a validator to stop their services and jail themselves without
+  // experiencing a slash
   rpc UnbondValidator(MsgUnbondValidator) returns (MsgUnbondValidatorResponse);
 
   // TokenizeShares defines a method for tokenizing shares from a validator.
@@ -119,8 +121,13 @@ message MsgEditValidator {
   // REF: #2373
   string commission_rate = 3
       [(cosmos_proto.scalar) = "cosmos.Dec", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
-  string min_self_delegation = 4
-      [(cosmos_proto.scalar) = "cosmos.Int", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+  // Deprecated: This field has been deprecated with LSM in favor of the validator bond
+  string min_self_delegation = 4 [
+    deprecated             = true,
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 // MsgEditValidatorResponse defines the Msg/EditValidator response type.
@@ -179,8 +186,6 @@ message MsgUndelegate {
 }
 
 // MsgUndelegateResponse defines the Msg/Undelegate response type.
-// This allows a validator to stop their services and jail themselves without
-// experiencing a slash
 message MsgUndelegateResponse {
   google.protobuf.Timestamp completion_time = 1
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
@@ -231,6 +236,8 @@ message MsgUpdateParamsResponse {};
 
 // MsgUnbondValidator defines a method for performing the status transition for
 // a validator from bonded to unbonded
+// This allows a validator to stop their services and jail themselves without
+// experiencing a slash
 message MsgUnbondValidator {
   string validator_address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
 }

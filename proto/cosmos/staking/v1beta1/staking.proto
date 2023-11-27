@@ -123,6 +123,7 @@ message Validator {
   Commission commission = 10 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   // Deprecated: This field has been deprecated with LSM in favor of the validator bond
   string min_self_delegation = 11 [
+    deprecated             = true,
     (cosmos_proto.scalar)  = "cosmos.Int",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
