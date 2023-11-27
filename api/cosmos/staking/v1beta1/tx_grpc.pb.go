@@ -63,6 +63,8 @@ type MsgClient interface {
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	// UnbondValidator defines a method for performing the status transition for a validator
 	// from bonded to unbonding
+	// This allows a validator to stop their services and jail themselves without
+	// experiencing a slash
 	UnbondValidator(ctx context.Context, in *MsgUnbondValidator, opts ...grpc.CallOption) (*MsgUnbondValidatorResponse, error)
 	// TokenizeShares defines a method for tokenizing shares from a validator.
 	TokenizeShares(ctx context.Context, in *MsgTokenizeShares, opts ...grpc.CallOption) (*MsgTokenizeSharesResponse, error)
@@ -243,6 +245,8 @@ type MsgServer interface {
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	// UnbondValidator defines a method for performing the status transition for a validator
 	// from bonded to unbonding
+	// This allows a validator to stop their services and jail themselves without
+	// experiencing a slash
 	UnbondValidator(context.Context, *MsgUnbondValidator) (*MsgUnbondValidatorResponse, error)
 	// TokenizeShares defines a method for tokenizing shares from a validator.
 	TokenizeShares(context.Context, *MsgTokenizeShares) (*MsgTokenizeSharesResponse, error)
