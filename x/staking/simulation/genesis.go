@@ -16,9 +16,12 @@ import (
 
 // Simulation parameter constants
 const (
-	unbondingTime     = "unbonding_time"
-	maxValidators     = "max_validators"
-	historicalEntries = "historical_entries"
+	unbondingTime             = "unbonding_time"
+	maxValidators             = "max_validators"
+	historicalEntries         = "historical_entries"
+	ValidatorBondFactor       = "validator_bond_factor"
+	GlobalLiquidStakingCap    = "global_liquid_staking_cap"
+	ValidatorLiquidStakingCap = "validator_liquid_staking_cap"
 )
 
 // genUnbondingTime returns randomized UnbondingTime
@@ -40,10 +43,13 @@ func getHistEntries(r *rand.Rand) uint32 {
 func RandomizedGenState(simState *module.SimulationState) {
 	// params
 	var (
-		unbondTime        time.Duration
-		maxVals           uint32
-		histEntries       uint32
-		minCommissionRate sdk.Dec
+		unbondTime                time.Duration
+		maxVals                   uint32
+		histEntries               uint32
+		minCommissionRate         sdk.Dec
+		validatorBondFactor       sdk.Dec
+		globalLiquidStakingCap    sdk.Dec
+		validatorLiquidStakingCap sdk.Dec
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -64,7 +70,15 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NOTE: the slashing module need to be defined after the staking module on the
 	// NewSimulationManager constructor for this to work
 	simState.UnbondTime = unbondTime
-	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, sdk.DefaultBondDenom, minCommissionRate)
+	params := types.NewParams(simState.UnbondTime, maxVals,
+		7,
+		histEntries,
+		sdk.DefaultBondDenom,
+		minCommissionRate,
+		validatorBondFactor,
+		globalLiquidStakingCap,
+		validatorLiquidStakingCap,
+	)
 
 	// validators & delegations
 	var (
