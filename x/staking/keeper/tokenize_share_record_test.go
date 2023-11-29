@@ -10,7 +10,8 @@ func (suite *KeeperTestSuite) TestGetLastTokenizeShareRecordId() {
 }
 
 // TODO: refactor LSM test
-// Note it might be moved to integration test
+// Note that this test might be moved to the integration tests
+//
 // func (suite *KeeperTestSuite) TestGetTokenizeShareRecord() {
 // app, ctx := suite.app, suite.ctx
 // owner1, owner2 := suite.addrs[0], suite.addrs[1]

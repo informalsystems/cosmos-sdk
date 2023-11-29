@@ -53,7 +53,6 @@ func (k Keeper) ValidatorBondFactor(ctx sdk.Context) (res sdk.Dec) {
 // Global liquid staking cap across all liquid staking providers
 func (k Keeper) GlobalLiquidStakingCap(ctx sdk.Context) (res sdk.Dec) {
 	return k.GetParams(ctx).GlobalLiquidStakingCap
-
 }
 
 // Liquid staking cap for each validator
