@@ -62,7 +62,7 @@ func createValidators(t *testing.T, ctx sdk.Context, app *simapp.SimApp, powers 
 	app.StakingKeeper.SetValidator(ctx, val1)
 	app.StakingKeeper.SetValidator(ctx, val2)
 	app.StakingKeeper.SetValidator(ctx, val3)
-	err := app.StakingKeeper.SetValidatorByConsAddr(ctx, val1)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, val1)
 	require.NoError(t, err)
 	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, val2)
 	require.NoError(t, err)
