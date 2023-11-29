@@ -9,6 +9,8 @@ import (
 )
 
 // staking message types
+//
+//nolint:gosec // these are not hard coded credentials
 const (
 	TypeMsgUndelegate                  = "begin_unbonding"
 	TypeMsgUnbondValidator             = "unbond_validator"
@@ -33,9 +35,16 @@ var (
 	_ sdk.Msg                            = &MsgEditValidator{}
 	_ sdk.Msg                            = &MsgDelegate{}
 	_ sdk.Msg                            = &MsgUndelegate{}
+	_ sdk.Msg                            = &MsgUnbondValidator{}
 	_ sdk.Msg                            = &MsgBeginRedelegate{}
 	_ sdk.Msg                            = &MsgCancelUnbondingDelegation{}
 	_ sdk.Msg                            = &MsgUpdateParams{}
+	_ sdk.Msg                            = &MsgTokenizeShares{}
+	_ sdk.Msg                            = &MsgRedeemTokensForShares{}
+	_ sdk.Msg                            = &MsgTransferTokenizeShareRecord{}
+	_ sdk.Msg                            = &MsgDisableTokenizeShares{}
+	_ sdk.Msg                            = &MsgEnableTokenizeShares{}
+	_ sdk.Msg                            = &MsgValidatorBond{}
 )
 
 // NewMsgCreateValidator creates a new MsgCreateValidator instance.

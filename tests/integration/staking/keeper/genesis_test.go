@@ -220,6 +220,7 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 	require.Equal(t, abcivals, vals)
 }
 
+// TODO: review LSM TEST
 func TestInitExportLiquidStakingGenesis(t *testing.T) {
 	app, ctx, addrs := bootstrapGenesisTest(t, 2)
 	address1, address2 := addrs[0], addrs[1]
