@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -808,11 +809,11 @@ func SimulateMsgTokenizeShares(ak types.AccountKeeper, bk types.BankKeeper, k *k
 
 		// check that tokenization would not exceed global cap
 		params := k.GetParams(ctx)
-		totalStaked := k.TotalBondedTokens(ctx).ToLegacyDec()
+		totalStaked := math.LegacyNewDec(k.TotalBondedTokens(ctx).Int64())
 		if totalStaked.IsZero() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTokenizeShares, "cannot happened - no validators bonded if stake is 0.0"), nil, nil // skip
 		}
-		totalLiquidStaked := k.GetTotalLiquidStakedTokens(ctx).Add(tokenizeShareAmt).ToLegacyDec()
+		totalLiquidStaked := math.LegacyNewDec(k.GetTotalLiquidStakedTokens(ctx).Add(tokenizeShareAmt).Int64())
 		liquidStakedPercent := totalLiquidStaked.Quo(totalStaked)
 		if liquidStakedPercent.GT(params.GlobalLiquidStakingCap) {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTokenizeShares, "global liquid staking cap exceeded"), nil, nil

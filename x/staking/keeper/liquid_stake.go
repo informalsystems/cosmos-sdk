@@ -3,6 +3,8 @@ package keeper
 import (
 	"time"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -74,8 +76,8 @@ func (k Keeper) CheckExceedsGlobalLiquidStakingCap(ctx sdk.Context, tokens sdk.I
 	}
 
 	// Calculate the percentage of stake that is liquid
-	updatedLiquidStaked := liquidStakedAmount.Add(tokens).ToLegacyDec()
-	liquidStakePercent := updatedLiquidStaked.Quo(totalStakedAmount.ToLegacyDec())
+	updatedLiquidStaked := math.LegacyNewDec(liquidStakedAmount.Add(tokens).Int64())
+	liquidStakePercent := updatedLiquidStaked.Quo(math.LegacyNewDec(totalStakedAmount.Int64()))
 
 	return liquidStakePercent.GT(liquidStakingCap)
 }

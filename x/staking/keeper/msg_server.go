@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/armon/go-metrics"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -854,7 +855,7 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 	// Similar to undelegations, if the account is attempting to tokenize the full delegation,
 	// but there's a precision error due to the decimal to int conversion, round up to the
 	// full decimal amount before modifying the delegation
-	shares := shareToken.Amount.ToLegacyDec()
+	shares := math.LegacyNewDec(shareToken.Amount.Int64())
 	if shareToken.Amount.Equal(delegation.Shares.TruncateInt()) {
 		shares = delegation.Shares
 	}
