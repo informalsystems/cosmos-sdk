@@ -610,7 +610,7 @@ func (k msgServer) CancelUnbondingDelegation(goCtx context.Context, msg *types.M
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.ValidatorAddress),
 			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
-			sdk.NewAttribute("creation_height", strconv.FormatInt(msg.CreationHeight, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreationHeight, strconv.FormatInt(msg.CreationHeight, 10)),
 		),
 	)
 
