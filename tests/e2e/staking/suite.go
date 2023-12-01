@@ -82,7 +82,7 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	// tokenize shares twice (once for the transfer and one for the redeem)
 	for i := 1; i <= 2; i++ {
-		MsgTokenizeSharesExec(
+		out, err := MsgTokenizeSharesExec(
 			val.ClientCtx,
 			val.Address,
 			val.ValAddress,

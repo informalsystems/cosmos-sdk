@@ -21,19 +21,18 @@ import (
 //
 //nolint:gosec // these are not hardcoded credentials
 const (
-	DefaultWeightMsgCreateValidator                      int = 100
-	DefaultWeightMsgEditValidator                        int = 5
-	DefaultWeightMsgDelegate                             int = 100
-	DefaultWeightMsgUndelegate                           int = 100
-	DefaultWeightMsgBeginRedelegate                      int = 100
-	DefaultWeightMsgCancelUnbondingDelegation            int = 100
-	DefaultWeightMsgValidatorBond                        int = 100
-	DefaultWeightMsgTokenizeShares                       int = 25
-	DefaultWeightMsgRedeemTokensforShares                int = 25
-	DefaultWeightMsgTransferTokenizeShareRecord          int = 5
-	DefaultWeightMsgEnableTokenizeShares                 int = 1
-	DefaultWeightMsgDisableTokenizeShares                int = 1
-	DefaultWeightMsgWithdrawAllTokenizeShareRecordReward int = 50
+	DefaultWeightMsgCreateValidator             int = 100
+	DefaultWeightMsgEditValidator               int = 5
+	DefaultWeightMsgDelegate                    int = 100
+	DefaultWeightMsgUndelegate                  int = 100
+	DefaultWeightMsgBeginRedelegate             int = 100
+	DefaultWeightMsgCancelUnbondingDelegation   int = 100
+	DefaultWeightMsgValidatorBond               int = 100
+	DefaultWeightMsgTokenizeShares              int = 25
+	DefaultWeightMsgRedeemTokensforShares       int = 25
+	DefaultWeightMsgTransferTokenizeShareRecord int = 5
+	DefaultWeightMsgEnableTokenizeShares        int = 1
+	DefaultWeightMsgDisableTokenizeShares       int = 1
 
 	OpWeightMsgCreateValidator             = "op_weight_msg_create_validator"
 	OpWeightMsgEditValidator               = "op_weight_msg_edit_validator"
