@@ -2,22 +2,12 @@ package keeper_test
 
 // TODO refactor LSM tests
 
-// import (
-// 	"fmt"
-// 	"testing"
-// 	"time"
-
-// 	testutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-
-// 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-// 	"github.com/cosmos/cosmos-sdk/simapp"
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/cosmos/cosmos-sdk/types/address"
-// 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-// 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-// 	"github.com/cosmos/cosmos-sdk/x/staking/types"
-// 	"github.com/stretchr/testify/require"
-// )
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
+	accountKeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+)
 
 // // Helper function to create a base account from an account name
 // // Used to differentiate against liquid staking provider module account
@@ -25,22 +15,6 @@ package keeper_test
 // 	baseAccountAddress := sdk.AccAddress(accountName)
 // 	app.AccountKeeper.SetAccount(ctx, authtypes.NewBaseAccountWithAddress(baseAccountAddress))
 // 	return baseAccountAddress
-// }
-
-// // Helper function to create 32-length account
-// // Used to mock an liquid staking provider's ICA account
-// func createICAAccount(app *simapp.SimApp, ctx sdk.Context) sdk.AccAddress {
-// 	icahost := "icahost"
-// 	connectionID := "connection-0"
-// 	portID := icahost
-
-// 	moduleAddress := authtypes.NewModuleAddress(icahost)
-// 	icaAddress := sdk.AccAddress(address.Derive(moduleAddress, []byte(connectionID+portID)))
-
-// 	account := authtypes.NewBaseAccountWithAddress(icaAddress)
-// 	app.AccountKeeper.SetAccount(ctx, account)
-
-// 	return icaAddress
 // }
 
 // // Helper function to create a module account address from a tokenized share
