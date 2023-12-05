@@ -10,8 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// TODO refactor LSM tests
-
 // Helper function to create a base account from an account name
 // Used to differentiate against liquid staking provider module account
 func createBaseAccount(app *simapp.SimApp, ctx sdk.Context, accountName string) sdk.AccAddress {

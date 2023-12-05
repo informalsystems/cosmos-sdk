@@ -97,7 +97,6 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 	require.True(math.IntEq(t, newNotBonded, oldNotBonded.AddRaw(1)))
 }
 
-// TODO refactor LSM tests:
 func TestValidatorBondUndelegate(t *testing.T) {
 	_, app, ctx := createTestInput(t)
 

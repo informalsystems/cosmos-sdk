@@ -158,7 +158,6 @@ func TestCancelUnbondingDelegation(t *testing.T) {
 	}
 }
 
-// TODO refactor  LSM test
 func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 	_, app, ctx := createTestInput(t)
 	var (
@@ -736,8 +735,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 	}
 }
 
-// TODO refactor LSM test
-//
 // Helper function to setup a delegator and validator for the Tokenize/Redeem conversion tests
 func setupTestTokenizeAndRedeemConversion(
 	t *testing.T,
@@ -765,8 +762,6 @@ func setupTestTokenizeAndRedeemConversion(
 	return delegatorAddress, validatorAddress
 }
 
-// TODO refactor LSM test
-//
 // Simulate a slash by decrementing the validator's tokens
 // We'll do this in a way such that the exchange rate is not an even integer
 // and the shares associated with a delegation will have a long decimal
@@ -781,7 +776,6 @@ func simulateSlashWithImprecision(t *testing.T, sk keeper.Keeper, ctx sdk.Contex
 	sk.SetValidator(ctx, validator)
 }
 
-// TODO refactor LSM test
 // Tests the conversion from tokenization and redemption from the following scenario:
 // Slash -> Delegate -> Tokenize -> Redeem
 // Note, in this example, there 2 tokens are lost during the decimal to int conversion
@@ -846,8 +840,6 @@ func TestTokenizeAndRedeemConversion_SlashBeforeDelegation(t *testing.T) {
 	require.Equal(t, expectedDelegationTokens, endDelegationTokens, "final delegation tokens")
 }
 
-// TODO refactor  LSM test
-//
 // Tests the conversion from tokenization and redemption from the following scenario:
 // Delegate -> Slash -> Tokenize -> Redeem
 // Note, in this example, there 1 token lost during the decimal to int conversion
@@ -915,8 +907,6 @@ func TestTokenizeAndRedeemConversion_SlashBeforeTokenization(t *testing.T) {
 	require.Equal(t, expectedDelegationTokens, endDelegationTokens, "final delegation tokens")
 }
 
-// TODO refactor  LSM test
-//
 // Tests the conversion from tokenization and redemption from the following scenario:
 // Delegate -> Tokenize -> Slash -> Redeem
 // Note, in this example, there 1 token lost during the decimal to int conversion
@@ -982,7 +972,6 @@ func TestTokenizeAndRedeemConversion_SlashBeforeRedemption(t *testing.T) {
 	require.Equal(t, delegationAmountAfterSlash-1, endDelegationTokens, "final delegation tokens")
 }
 
-// TODO refactor  LSM test
 func TestTransferTokenizeShareRecord(t *testing.T) {
 	var (
 		bankKeeper    bankkeeper.Keeper
@@ -1037,7 +1026,6 @@ func TestTransferTokenizeShareRecord(t *testing.T) {
 	require.Len(t, records, 1)
 }
 
-// TODO refactor  LSM test
 func TestValidatorBond(t *testing.T) {
 	testCases := []struct {
 		name                 string
@@ -1177,7 +1165,6 @@ func TestValidatorBond(t *testing.T) {
 	}
 }
 
-// TODO refactor  LSM test
 func TestChangeValidatorBond(t *testing.T) {
 	_, app, ctx := createTestInput(t)
 	var (
@@ -1342,7 +1329,6 @@ func TestChangeValidatorBond(t *testing.T) {
 	checkValidatorBondShares(validatorCAddress, expectedBondSharesC)
 }
 
-// TODO refactor  LSM test
 func TestEnableDisableTokenizeShares(t *testing.T) {
 	_, app, ctx := createTestInput(t)
 	var (
@@ -1467,7 +1453,6 @@ func TestEnableDisableTokenizeShares(t *testing.T) {
 	require.NoError(t, err, "no error expected when tokenizing after lock has expired")
 }
 
-// TODO refactor  LSM test
 func TestUnbondValidator(t *testing.T) {
 	var (
 		bankKeeper    bankkeeper.Keeper
@@ -1517,8 +1502,6 @@ func TestUnbondValidator(t *testing.T) {
 	require.True(t, validator.Jailed)
 }
 
-// TODO refactor  LSM test
-//
 // TestICADelegateUndelegate tests that an ICA account can undelegate
 // sequentially right after delegating.
 func TestICADelegateUndelegate(t *testing.T) {

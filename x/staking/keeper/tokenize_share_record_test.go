@@ -9,7 +9,6 @@ func (suite *KeeperTestSuite) TestGetLastTokenizeShareRecordId() {
 	suite.Equal(lastTokenizeShareRecordID, uint64(100))
 }
 
-// TODO: refactor LSM test
 // Note that this test might be moved to the integration tests
 //
 // func (suite *KeeperTestSuite) TestGetTokenizeShareRecord() {
