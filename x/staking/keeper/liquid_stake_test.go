@@ -1,32 +1,15 @@
 package keeper_test
 
 import (
-	"fmt"
+	"time"
 
-	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
-
-// Helper function to create a base account from an account name
-// Used to differentiate against liquid staking provider module account
-func createBaseAccount(app *simapp.SimApp, ctx sdk.Context, accountName string) sdk.AccAddress {
-	baseAccountAddress := sdk.AccAddress(accountName)
-	app.AccountKeeper.SetAccount(ctx, authtypes.NewBaseAccountWithAddress(baseAccountAddress))
-	return baseAccountAddress
-}
-
-// Helper function to create a module account address from a tokenized share
-// Used to mock the delegation owner of a tokenized share
-func createTokenizeShareModuleAccount(recordID uint64) sdk.AccAddress {
-	record := types.TokenizeShareRecord{
-		Id:            recordID,
-		ModuleAccount: fmt.Sprintf("%s%d", types.TokenizeShareModuleAccountPrefix, recordID),
-	}
-	return record.GetModuleAddress()
-}
 
 // Tests Set/Get TotalLiquidStakedTokens
 func (s *KeeperTestSuite) TestTotalLiquidStakedTokens() {
@@ -523,4 +506,244 @@ func (s *KeeperTestSuite) TestSafelyDecreaseValidatorBond() {
 	actualValidator, found = keeper.GetValidator(ctx, valAddress)
 	require.True(found)
 	require.Equal(expectedBondShares, actualValidator.ValidatorBondShares, "validator bond shares shares")
+}
+
+// Tests Add/Remove/Get/SetTokenizeSharesLock
+func (s *KeeperTestSuite) TestTokenizeSharesLock() {
+	ctx, keeper := s.ctx, s.stakingKeeper
+	require := s.Require()
+
+	addresses := simtestutil.CreateIncrementalAccounts(2)
+	addressA, addressB := addresses[0], addresses[1]
+
+	unlocked := types.TOKENIZE_SHARE_LOCK_STATUS_UNLOCKED.String()
+	locked := types.TOKENIZE_SHARE_LOCK_STATUS_LOCKED.String()
+	lockExpiring := types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING.String()
+
+	// Confirm both accounts start unlocked
+	status, _ := keeper.GetTokenizeSharesLock(ctx, addressA)
+	require.Equal(unlocked, status.String(), "addressA unlocked at start")
+
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressB)
+	require.Equal(unlocked, status.String(), "addressB unlocked at start")
+
+	// Lock the first account
+	keeper.AddTokenizeSharesLock(ctx, addressA)
+
+	// The first account should now have tokenize shares disabled
+	// and the unlock time should be the zero time
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressA)
+	require.Equal(locked, status.String(), "addressA locked")
+
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressB)
+	require.Equal(unlocked, status.String(), "addressB still unlocked")
+
+	// Update the lock time and confirm it was set
+	expectedUnlockTime := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
+	keeper.SetTokenizeSharesUnlockTime(ctx, addressA, expectedUnlockTime)
+
+	status, actualUnlockTime := keeper.GetTokenizeSharesLock(ctx, addressA)
+	require.Equal(lockExpiring, status.String(), "addressA lock expiring")
+	require.Equal(expectedUnlockTime, actualUnlockTime, "addressA unlock time")
+
+	// Confirm B is still unlocked
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressB)
+	require.Equal(unlocked, status.String(), "addressB still unlocked")
+
+	// Remove the lock
+	keeper.RemoveTokenizeSharesLock(ctx, addressA)
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressA)
+	require.Equal(unlocked, status.String(), "addressA unlocked at end")
+
+	status, _ = keeper.GetTokenizeSharesLock(ctx, addressB)
+	require.Equal(unlocked, status.String(), "addressB unlocked at end")
+}
+
+// Tests GetAllTokenizeSharesLocks
+func (s *KeeperTestSuite) TestGetAllTokenizeSharesLocks() {
+	ctx, keeper := s.ctx, s.stakingKeeper
+	require := s.Require()
+
+	addresses := simtestutil.CreateIncrementalAccounts(4)
+
+	// Set 2 locked accounts, and two accounts with a lock expiring
+	keeper.AddTokenizeSharesLock(ctx, addresses[0])
+	keeper.AddTokenizeSharesLock(ctx, addresses[1])
+
+	unlockTime1 := time.Date(2023, 1, 1, 1, 0, 0, 0, time.UTC)
+	unlockTime2 := time.Date(2023, 1, 2, 1, 0, 0, 0, time.UTC)
+	keeper.SetTokenizeSharesUnlockTime(ctx, addresses[2], unlockTime1)
+	keeper.SetTokenizeSharesUnlockTime(ctx, addresses[3], unlockTime2)
+
+	// Defined expected locks after GetAll
+	expectedLocks := map[string]types.TokenizeShareLock{
+		addresses[0].String(): {
+			Status: types.TOKENIZE_SHARE_LOCK_STATUS_LOCKED.String(),
+		},
+		addresses[1].String(): {
+			Status: types.TOKENIZE_SHARE_LOCK_STATUS_LOCKED.String(),
+		},
+		addresses[2].String(): {
+			Status:         types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING.String(),
+			CompletionTime: unlockTime1,
+		},
+		addresses[3].String(): {
+			Status:         types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING.String(),
+			CompletionTime: unlockTime2,
+		},
+	}
+
+	// Check output from GetAll
+	actualLocks := keeper.GetAllTokenizeSharesLocks(ctx)
+	require.Len(actualLocks, len(expectedLocks), "number of locks")
+
+	for i, actual := range actualLocks {
+		expected, ok := expectedLocks[actual.Address]
+		require.True(ok, "address %s not expected", actual.Address)
+		require.Equal(expected.Status, actual.Status, "tokenize share lock #%d status", i)
+		require.Equal(expected.CompletionTime, actual.CompletionTime, "tokenize share lock #%d completion time", i)
+	}
+}
+
+// Test Get/SetPendingTokenizeShareAuthorizations
+func (s *KeeperTestSuite) TestPendingTokenizeShareAuthorizations() {
+	ctx, keeper := s.ctx, s.stakingKeeper
+	require := s.Require()
+
+	// Create dummy accounts and completion times
+
+	addresses := simtestutil.CreateIncrementalAccounts(4)
+	addressStrings := []string{}
+	for _, address := range addresses {
+		addressStrings = append(addressStrings, address.String())
+	}
+
+	timeA := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
+	timeB := timeA.Add(time.Hour)
+
+	// There should be no addresses returned originally
+	authorizationsA := keeper.GetPendingTokenizeShareAuthorizations(ctx, timeA)
+	require.Empty(authorizationsA.Addresses, "no addresses at timeA expected")
+
+	authorizationsB := keeper.GetPendingTokenizeShareAuthorizations(ctx, timeB)
+	require.Empty(authorizationsB.Addresses, "no addresses at timeB expected")
+
+	// Store addresses for timeB
+	keeper.SetPendingTokenizeShareAuthorizations(ctx, timeB, types.PendingTokenizeShareAuthorizations{
+		Addresses: addressStrings,
+	})
+
+	// Check addresses
+	authorizationsA = keeper.GetPendingTokenizeShareAuthorizations(ctx, timeA)
+	require.Empty(authorizationsA.Addresses, "no addresses at timeA expected at end")
+
+	authorizationsB = keeper.GetPendingTokenizeShareAuthorizations(ctx, timeB)
+	require.Equal(addressStrings, authorizationsB.Addresses, "address length")
+}
+
+// Test QueueTokenizeSharesAuthorization and RemoveExpiredTokenizeShareLocks
+func (s *KeeperTestSuite) TestTokenizeShareAuthorizationQueue() {
+	ctx, keeper := s.ctx, s.stakingKeeper
+	require := s.Require()
+
+	// Create dummy accounts and completion times
+
+	// We'll start by adding the following addresses to the queue
+	//   Time 0: [address0]
+	//   Time 1: []
+	//   Time 2: [address1, address2, address3]
+	//   Time 3: [address4, address5]
+	//   Time 4: [address6]
+	addresses := simtestutil.CreateIncrementalAccounts(7)
+	addressesByTime := map[int][]sdk.AccAddress{
+		0: {addresses[0]},
+		1: {},
+		2: {addresses[1], addresses[2], addresses[3]},
+		3: {addresses[4], addresses[5]},
+		4: {addresses[6]},
+	}
+
+	// Set the unbonding time to 1 day
+	unbondingPeriod := time.Hour * 24
+	params := keeper.GetParams(ctx)
+	params.UnbondingTime = unbondingPeriod
+	keeper.SetParams(ctx, params)
+
+	// Add each address to the queue and then increment the block time
+	// such that the times line up as follows
+	//   Time 0: 2023-01-01 00:00:00
+	//   Time 1: 2023-01-01 00:01:00
+	//   Time 2: 2023-01-01 00:02:00
+	//   Time 3: 2023-01-01 00:03:00
+	startTime := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
+	ctx = ctx.WithBlockTime(startTime)
+	blockTimeIncrement := time.Hour
+
+	for timeIndex := 0; timeIndex <= 4; timeIndex++ {
+		for _, address := range addressesByTime[timeIndex] {
+			keeper.QueueTokenizeSharesAuthorization(ctx, address)
+		}
+		ctx = ctx.WithBlockTime(ctx.BlockTime().Add(blockTimeIncrement))
+	}
+
+	// We'll unlock the tokens using the following progression
+	// The "alias'"/keys for these times assume a starting point of the Time 0
+	// from above, plus the Unbonding Time
+	//   Time -1  (2023-01-01 23:59:99): []
+	//   Time  0  (2023-01-02 00:00:00): [address0]
+	//   Time  1  (2023-01-02 00:01:00): []
+	//   Time 2.5 (2023-01-02 00:02:30): [address1, address2, address3]
+	//   Time 10  (2023-01-02 00:10:00): [address4, address5, address6]
+	unlockBlockTimes := map[string]time.Time{
+		"-1":  startTime.Add(unbondingPeriod).Add(-time.Second),
+		"0":   startTime.Add(unbondingPeriod),
+		"1":   startTime.Add(unbondingPeriod).Add(blockTimeIncrement),
+		"2.5": startTime.Add(unbondingPeriod).Add(2 * blockTimeIncrement).Add(blockTimeIncrement / 2),
+		"10":  startTime.Add(unbondingPeriod).Add(10 * blockTimeIncrement),
+	}
+	expectedUnlockedAddresses := map[string][]string{
+		"-1":  {},
+		"0":   {addresses[0].String()},
+		"1":   {},
+		"2.5": {addresses[1].String(), addresses[2].String(), addresses[3].String()},
+		"10":  {addresses[4].String(), addresses[5].String(), addresses[6].String()},
+	}
+
+	// Now we'll remove items from the queue sequentially
+	// First check with a block time before the first expiration - it should remove no addresses
+	actualAddresses := keeper.RemoveExpiredTokenizeShareLocks(ctx, unlockBlockTimes["-1"])
+	require.Equal(expectedUnlockedAddresses["-1"], actualAddresses, "no addresses unlocked from time -1")
+
+	// Then pass in (time 0 + unbonding time) - it should remove the first address
+	actualAddresses = keeper.RemoveExpiredTokenizeShareLocks(ctx, unlockBlockTimes["0"])
+	require.Equal(expectedUnlockedAddresses["0"], actualAddresses, "one address unlocked from time 0")
+
+	// Now pass in (time 1 + unbonding time) - it should remove no addresses since
+	// the address at time 0 was already removed
+	actualAddresses = keeper.RemoveExpiredTokenizeShareLocks(ctx, unlockBlockTimes["1"])
+	require.Equal(expectedUnlockedAddresses["1"], actualAddresses, "no addresses unlocked from time 1")
+
+	// Now pass in (time 2.5 + unbonding time) - it should remove the three addresses from time 2
+	actualAddresses = keeper.RemoveExpiredTokenizeShareLocks(ctx, unlockBlockTimes["2.5"])
+	require.Equal(expectedUnlockedAddresses["2.5"], actualAddresses, "addresses unlocked from time 2.5")
+
+	// Finally pass in a block time far in the future, which should remove all the remaining locks
+	actualAddresses = keeper.RemoveExpiredTokenizeShareLocks(ctx, unlockBlockTimes["10"])
+	require.Equal(expectedUnlockedAddresses["10"], actualAddresses, "addresses unlocked from time 10")
+}
+
+// Tests DelegatorIsLiquidStaker
+func (s *KeeperTestSuite) TestDelegatorIsLiquidStaker() {
+	_, keeper := s.ctx, s.stakingKeeper
+	require := s.Require()
+
+	// Create base and ICA accounts
+	baseAccountAddress := sdk.AccAddress("base-account")
+	icaAccountAddress := sdk.AccAddress(
+		address.Derive(authtypes.NewModuleAddress("icahost"), []byte("connection-0"+"icahost")),
+	)
+
+	// Only the ICA module account should be considered a liquid staking provider
+	require.False(keeper.DelegatorIsLiquidStaker(baseAccountAddress), "base account")
+	require.True(keeper.DelegatorIsLiquidStaker(icaAccountAddress), "ICA module account")
 }
