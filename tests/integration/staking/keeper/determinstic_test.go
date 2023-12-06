@@ -264,8 +264,7 @@ func (suite *DeterministicTestSuite) TestGRPCValidator() {
 func (suite *DeterministicTestSuite) TestGRPCValidators() {
 	validatorStatus := []string{stakingtypes.BondStatusBonded, stakingtypes.BondStatusUnbonded, stakingtypes.BondStatusUnbonding, ""}
 	rapid.Check(suite.T(), func(t *rapid.T) {
-		// NOTE: max number of validators changed from 3 to 2 to prevent the test from timing out after 30s.
-		valsCount := rapid.IntRange(1, 2).Draw(t, "num-validators")
+		valsCount := rapid.IntRange(1, 3).Draw(t, "num-validators")
 		for i := 0; i < valsCount; i++ {
 			suite.createAndSetValidator(t)
 		}
@@ -289,8 +288,7 @@ func (suite *DeterministicTestSuite) TestGRPCValidators() {
 func (suite *DeterministicTestSuite) TestGRPCValidatorDelegations() {
 	rapid.Check(suite.T(), func(t *rapid.T) {
 		validator := suite.createAndSetValidatorWithStatus(t, stakingtypes.Bonded)
-		// NOTE: max number of delegation changed from 5 to 2 to prevent the test from timing out after 30s.
-		numDels := rapid.IntRange(1, 2).Draw(t, "num-dels")
+		numDels := rapid.IntRange(1, 5).Draw(t, "num-dels")
 
 		for i := 0; i < numDels; i++ {
 			delegator := testdata.AddressGenerator(t).Draw(t, "delegator")
