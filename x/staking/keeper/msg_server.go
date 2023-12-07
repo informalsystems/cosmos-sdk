@@ -642,13 +642,13 @@ func (k msgServer) UnbondValidator(goCtx context.Context, msg *types.MsgUnbondVa
 	if err != nil {
 		return nil, err
 	}
+
 	// validator must already be registered
 	validator, found := k.GetValidator(ctx, valAddr)
 	if !found {
 		return nil, types.ErrNoValidatorFound
 	}
 
-	// jail the validator.
 	k.jailValidator(ctx, validator)
 	return &types.MsgUnbondValidatorResponse{}, nil
 }
