@@ -70,7 +70,7 @@ func RandomFees(r *rand.Rand, ctx sdk.Context, spendableCoins sdk.Coins) (sdk.Co
 	spendable := sdk.NewCoins()
 	// remove liquid staking denoms from spendable coins since fees cannot be paid in those denoms
 	for _, coin := range spendableCoins {
-		if strings.Contains(coin.Denom, sdk.Bech32PrefixValAddr) {
+		if strings.Contains(coin.Denom, sdk.GetConfig().GetBech32ValidatorAddrPrefix()) {
 			continue
 		}
 		spendable = append(spendable, coin)
