@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,7 +26,7 @@ func clearPoolBalance(t *testing.T, sk keeper.Keeper, ak accountkeeper.AccountKe
 }
 
 // Helper function to fund the Bonded pool balances before a unit test
-func fundPoolBalance(t *testing.T, sk keeper.Keeper, bk bankkeeper.Keeper, ctx sdk.Context, amount sdk.Int) {
+func fundPoolBalance(t *testing.T, sk keeper.Keeper, bk bankkeeper.Keeper, ctx sdk.Context, amount math.Int) {
 	bondDenom := sk.BondDenom(ctx)
 	bondedPoolCoin := sdk.NewCoin(bondDenom, amount)
 
@@ -55,9 +56,9 @@ func TestCheckExceedsGlobalLiquidStakingCap(t *testing.T) {
 	testCases := []struct {
 		name             string
 		globalLiquidCap  sdk.Dec
-		totalLiquidStake sdk.Int
-		totalStake       sdk.Int
-		newLiquidStake   sdk.Int
+		totalLiquidStake math.Int
+		totalStake       math.Int
+		newLiquidStake   math.Int
 		tokenizingShares bool
 		expectedExceeds  bool
 	}{

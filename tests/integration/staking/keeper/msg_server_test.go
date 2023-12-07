@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"cosmossdk.io/simapp"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -174,12 +175,12 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 
 	testCases := []struct {
 		name                          string
-		vestingAmount                 sdk.Int
-		delegationAmount              sdk.Int
-		tokenizeShareAmount           sdk.Int
-		redeemAmount                  sdk.Int
-		targetVestingDelAfterShare    sdk.Int
-		targetVestingDelAfterRedeem   sdk.Int
+		vestingAmount                 math.Int
+		delegationAmount              math.Int
+		tokenizeShareAmount           math.Int
+		redeemAmount                  math.Int
+		targetVestingDelAfterShare    math.Int
+		targetVestingDelAfterRedeem   math.Int
 		globalLiquidStakingCap        sdk.Dec
 		slashFactor                   sdk.Dec
 		validatorLiquidStakingCap     sdk.Dec
@@ -1172,7 +1173,7 @@ func TestChangeValidatorBond(t *testing.T) {
 		bankKeeper    = app.BankKeeper
 	)
 
-	checkValidatorBondShares := func(validatorAddress sdk.ValAddress, expectedShares sdk.Int) {
+	checkValidatorBondShares := func(validatorAddress sdk.ValAddress, expectedShares math.Int) {
 		validator, found := stakingKeeper.GetValidator(ctx, validatorAddress)
 		require.True(t, found, "validator should have been found")
 		require.Equal(t, expectedShares.Int64(), validator.ValidatorBondShares.TruncateInt64(), "validator bond shares")
