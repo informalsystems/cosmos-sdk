@@ -158,7 +158,7 @@ func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx sdk.Context, valAddress 
 	if k.CheckExceedsValidatorBondCap(ctx, validator, shares) {
 		return validator, types.ErrInsufficientValidatorBondShares
 	}
-	if k.CheckExceedsValidatorLiquidStakingCap(ctx, validator, shares, false) {
+	if k.CheckExceedsValidatorLiquidStakingCap(ctx, validator, shares, sharesAlreadyBonded) {
 		return validator, types.ErrValidatorLiquidStakingCapExceeded
 	}
 
