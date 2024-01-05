@@ -447,7 +447,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Attempt to increase the validator liquid shares, it should throw an
 	// error that the validator bond cap was exceeded
-	_, err := keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, true)
+	_, err := keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, false)
 	require.ErrorIs(err, types.ErrInsufficientValidatorBondShares)
 	checkValidatorLiquidShares(initialLiquidShares, "shares after low bond factor")
 
@@ -457,12 +457,12 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Try the increase again and check that it succeeded
 	expectedLiquidSharesAfterFirstStake := initialLiquidShares.Add(firstIncreaseAmount)
-	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, true)
+	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, false)
 	require.NoError(err)
 	checkValidatorLiquidShares(expectedLiquidSharesAfterFirstStake, "shares with cap loose bond cap")
 
 	// Attempt another increase, it should fail from the liquid staking cap
-	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, secondIncreaseAmount, true)
+	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, secondIncreaseAmount, false)
 	require.ErrorIs(err, types.ErrValidatorLiquidStakingCapExceeded)
 	checkValidatorLiquidShares(expectedLiquidSharesAfterFirstStake, "shares after liquid staking cap hit")
 
@@ -472,7 +472,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Finally confirm that the increase succeeded this time
 	expectedLiquidSharesAfterSecondStake := expectedLiquidSharesAfterFirstStake.Add(secondIncreaseAmount)
-	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, secondIncreaseAmount, true)
+	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, secondIncreaseAmount, false)
 	require.NoError(err, "no error expected after increasing liquid staking cap")
 	checkValidatorLiquidShares(expectedLiquidSharesAfterSecondStake, "shares after loose liquid stake cap")
 }
