@@ -474,8 +474,8 @@ Redelegations affect the delegation, source and destination validators.
 * otherwise, if the `sourceValidator.Status` is not `Bonded`, and the `destinationValidator`
   is `Bonded`, transfer the newly delegated tokens from the `NotBondedPool` to the `BondedPool` `ModuleAccount`
 * record the token amount in an new entry in the relevant `Redelegation`
-* decrement the source validator's `LiquidShares`
-* increment destination validator's `LiquidShares`
+* if the delegator is a liquid staking provider,
+ decrement the source validator's `LiquidShares` increment destination validator's `LiquidShares`
 
 From when a redelegation begins until it completes, the delegator is in a state of "pseudo-unbonding", and can still be
 slashed for infractions that occurred before the redelegation began.
@@ -744,9 +744,9 @@ either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap` or the vali
 
 When this message is processed the following actions occur:
 
-* if the delegation if is a validator bond, the `ValidatorBondShares` of the validator is decreased.
-* if the delegator is a liquid staking provider, the `TotalLiquidStakedTokens`` increased
-and the validator's `LiquidShares` is decreased.
+* if the delegation if is a validator bond, the `ValidatorBondShares` of the source validator is decreased.
+* if the delegator is a liquid staking provider,
+ the source validator's `LiquidShares` increased and the destination validator's `LiquidShares` is decreased.
 * the source validator's `DelegatorShares` and the delegations `Shares` are both reduced by the message `SharesAmount`
 * calculate the token worth of the shares remove that amount tokens held within the source validator.
 * if the source validator is:
@@ -768,7 +768,7 @@ https://github.com/cosmos/cosmos-sdk/blob/v0.45.16-ics-lsm/proto/cosmos/staking/
 ```
 
 ```protobuf reference
-https://github.com/cosmos/cosmos-sdk/blob/0af2f4da004cbea6414a8bad56e8bdcd45badf1e/proto/cosmos/staking/v1beta1/tx.proto#L190-L199
+https://github.com/cosmos/cosmos-sdk/blob/v0.45.16-ics-lsm/proto/cosmos/staking/v1beta1/tx.proto#L190-L199
 ```
 
 This message returns a response containing the number of tokens generated:
