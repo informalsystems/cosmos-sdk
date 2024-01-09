@@ -32,6 +32,8 @@ network.
     * [Redelegation](#redelegation)
     * [Queues](#queues)
     * [HistoricalInfo](#historicalinfo)
+    * [TotalLiquidStakedTokens](#totalliquidstakedtokens)
+    * [PendingTokenizeShareAuthorizations](#pendingtokenizeshareauthorizations)
 * [State Transitions](#state-transitions)
     * [Validators](#validators)
     * [Delegations](#delegations)
@@ -160,7 +162,6 @@ is updated during the validator set update process which takes place in [`EndBlo
 `ValidatorBondShares` is the number of shares self bonded from the validator.
 
 `LiquidShares` is the number of shares either tokenized or owned by a liquid staking provider.
-
 
 Each validator's state is stored in a `Validator` struct:
 
@@ -355,7 +356,6 @@ PendingTokenizeShareAuthorizations stores a queue of addresses that have their t
 ```go reference
 https://github.com/cosmos/cosmos-sdk/blob/v0.45.16-ics-lsm/proto/cosmos/staking/v1beta1/staking.proto#L417-L421
 ```
-
 
 ## State Transitions
 
@@ -669,7 +669,7 @@ This message is expected to fail if:
 
 When this message is processed the following actions occur:
 
-* if the delegation if is a validator bond, the `ValidatorBondShares` of the validator is decreased.
+* if the delegation is a validator bond, the `ValidatorBondShares` of the validator is decreased.
  
 * if the delegator is a liquid staking provider, the `TotalLiquidStakedTokens`
 and the validator's `LiquidShares` are decreased.
