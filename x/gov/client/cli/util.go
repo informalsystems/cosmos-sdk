@@ -118,7 +118,6 @@ func parseSubmitProposal(cdc codec.Codec, path string) ([]sdk.Msg, string, strin
 	for _, coinJSON := range proposal.InitialDeposit {
 		var coin sdk.Coin
 		err = cdc.UnmarshalJSON(coinJSON, &coin)
-		fmt.Println("### JSON", coinJSON, coin)
 		if err != nil {
 			return nil, "", "", "", nil, err
 		}
