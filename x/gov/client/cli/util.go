@@ -84,7 +84,7 @@ type proposal struct {
 	// Msgs defines an array of sdk.Msgs proto-JSON-encoded as Anys.
 	Messages       []json.RawMessage `json:"messages,omitempty"`
 	Metadata       string            `json:"metadata"`
-	InitialDeposit string            `json:"initial_deposit"`
+	InitialDeposit string            `json:"initialDeposit"`
 	Title          string            `json:"title"`
 	Summary        string            `json:"summary"`
 }
@@ -114,10 +114,16 @@ func parseSubmitProposal(cdc codec.Codec, path string) ([]sdk.Msg, string, strin
 		msgs[i] = msg
 	}
 
-	deposit, err := sdk.ParseCoinsNormalized(proposal.InitialDeposit)
+	var deposit sdk.Coins
+	err = cdc.UnmarshalInterfaceJSON([]byte(proposal.InitialDeposit), &deposit)
 	if err != nil {
 		return nil, "", "", "", nil, err
 	}
+	// deposit, err := sdk.ParseCoinsNormalized(proposal.InitialDeposit)
+	// if err != nil {
+	// return nil, "", "", "", nil, err
+	// }
+	deposit = deposit.Sort()
 
 	return msgs, proposal.Metadata, proposal.Title, proposal.Summary, deposit, nil
 }
