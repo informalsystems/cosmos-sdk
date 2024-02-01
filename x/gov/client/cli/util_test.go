@@ -163,7 +163,7 @@ func TestParseSubmitProposal(t *testing.T) {
 	"metadata": "%s",
 	"title": "My awesome title",
 	"summary": "My awesome summary",
-	"deposit": "1000test"
+	"initial_deposit": [{ "denom": "test","amount": "1000" }]
 }
 `, addr, addr, addr, addr, addr, base64.StdEncoding.EncodeToString(expectedMetadata)))
 

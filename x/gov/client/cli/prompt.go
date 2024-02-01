@@ -160,14 +160,15 @@ func (p *proposalType) Prompt(cdc codec.Codec, skipMetadata bool) (*proposal, ty
 	}
 
 	// set deposit
-	depositPrompt := promptui.Prompt{
-		Label:    "Enter proposal deposit",
-		Validate: client.ValidatePromptCoins,
-	}
-	proposal.InitialDeposit, err = depositPrompt.Run()
-	if err != nil {
-		return nil, metadata, fmt.Errorf("failed to set proposal deposit: %w", err)
-	}
+	// depositPrompt := promptui.Prompt{
+	// 	Label: "Enter proposal deposit",
+	// 	// Validate: client.Val,
+	// }
+
+	// proposal.InitialDeposit, err = depositPrompt.Run()
+	// if err != nil {
+	// 	return nil, metadata, fmt.Errorf("failed to set proposal deposit: %w", err)
+	// }
 
 	if p.Msg == nil {
 		return proposal, metadata, nil
