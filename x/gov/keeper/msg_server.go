@@ -29,6 +29,7 @@ func (k msgServer) SubmitProposal(goCtx context.Context, msg *v1.MsgSubmitPropos
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	initialDeposit := msg.GetInitialDeposit()
+	fmt.Println("### INITIAL MSG ####", initialDeposit)
 
 	params := k.Keeper.GetParams(ctx)
 
