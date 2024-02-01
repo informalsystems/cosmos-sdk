@@ -164,7 +164,7 @@ func (p *proposalType) Prompt(cdc codec.Codec, skipMetadata bool) (*proposal, ty
 		Label:    "Enter proposal deposit",
 		Validate: client.ValidatePromptCoins,
 	}
-	proposal.Deposit, err = depositPrompt.Run()
+	proposal.InitialDeposit, err = depositPrompt.Run()
 	if err != nil {
 		return nil, metadata, fmt.Errorf("failed to set proposal deposit: %w", err)
 	}
