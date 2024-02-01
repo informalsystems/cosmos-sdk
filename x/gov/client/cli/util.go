@@ -82,11 +82,11 @@ func parseSubmitLegacyProposal(fs *pflag.FlagSet) (*legacyProposal, error) {
 // proposal defines the new Msg-based proposal.
 type proposal struct {
 	// Msgs defines an array of sdk.Msgs proto-JSON-encoded as Anys.
-	Messages []json.RawMessage `json:"messages,omitempty"`
-	Metadata string            `json:"metadata"`
-	Deposit  string            `json:"deposit"`
-	Title    string            `json:"title"`
-	Summary  string            `json:"summary"`
+	Messages       []json.RawMessage `json:"messages,omitempty"`
+	Metadata       string            `json:"metadata"`
+	InitialDeposit string            `json:"initial_deposit"`
+	Title          string            `json:"title"`
+	Summary        string            `json:"summary"`
 }
 
 // parseSubmitProposal reads and parses the proposal.
@@ -114,7 +114,7 @@ func parseSubmitProposal(cdc codec.Codec, path string) ([]sdk.Msg, string, strin
 		msgs[i] = msg
 	}
 
-	deposit, err := sdk.ParseCoinsNormalized(proposal.Deposit)
+	deposit, err := sdk.ParseCoinsNormalized(proposal.InitialDeposit)
 	if err != nil {
 		return nil, "", "", "", nil, err
 	}
