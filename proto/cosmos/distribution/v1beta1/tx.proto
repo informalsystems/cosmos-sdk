@@ -29,12 +29,7 @@ service Msg {
 
   // FundCommunityPool defines a method to allow an account to directly
   // fund the community pool.
-  //
-  // Deprecated: Use x/protocolpool module's FundCommunityPool instead.
-  // Since: cosmos-sdk 0.50
-  rpc FundCommunityPool(MsgFundCommunityPool) returns (MsgFundCommunityPoolResponse) {
-    option deprecated = true;
-  };
+  rpc FundCommunityPool(MsgFundCommunityPool) returns (MsgFundCommunityPoolResponse);
 
   // UpdateParams defines a governance operation for updating the x/distribution
   // module parameters. The authority is defined in the keeper.
@@ -47,8 +42,7 @@ service Msg {
   // could be the governance module itself. The authority is defined in the
   // keeper.
   //
-  // Deprecated: Use x/protocolpool module's CommunityPoolSpend instead.
-  // Since: cosmos-sdk 0.50
+  // Since: cosmos-sdk 0.47
   rpc CommunityPoolSpend(MsgCommunityPoolSpend) returns (MsgCommunityPoolSpendResponse);
 
   // DepositValidatorRewardsPool defines a method to provide additional rewards
@@ -56,6 +50,14 @@ service Msg {
   //
   // Since: cosmos-sdk 0.50
   rpc DepositValidatorRewardsPool(MsgDepositValidatorRewardsPool) returns (MsgDepositValidatorRewardsPoolResponse);
+
+  // WithdrawTokenizeShareRecordReward defines a method to withdraw reward for an owning TokenizeShareRecord
+  rpc WithdrawTokenizeShareRecordReward(MsgWithdrawTokenizeShareRecordReward)
+      returns (MsgWithdrawTokenizeShareRecordRewardResponse);
+
+  // WithdrawAllTokenizeShareRecordReward defines a method to withdraw reward for all owning TokenizeShareRecord
+  rpc WithdrawAllTokenizeShareRecordReward(MsgWithdrawAllTokenizeShareRecordReward)
+      returns (MsgWithdrawAllTokenizeShareRecordRewardResponse);
 }
 
 // MsgSetWithdrawAddress sets the withdraw address for
@@ -126,11 +128,7 @@ message MsgWithdrawValidatorCommissionResponse {
 
 // MsgFundCommunityPool allows an account to directly
 // fund the community pool.
-//
-// Deprecated: Use x/protocolpool module's MsgFundCommunityPool instead.
-// Since: cosmos-sdk 0.50
 message MsgFundCommunityPool {
-  option deprecated             = true;
   option (cosmos.msg.v1.signer) = "depositor";
   option (amino.name)           = "cosmos-sdk/MsgFundCommunityPool";
 
@@ -147,12 +145,7 @@ message MsgFundCommunityPool {
 }
 
 // MsgFundCommunityPoolResponse defines the Msg/FundCommunityPool response type.
-//
-// Deprecated
-// Since: cosmos-sdk 0.50
-message MsgFundCommunityPoolResponse {
-  option deprecated = true;
-}
+message MsgFundCommunityPoolResponse {}
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 //
@@ -179,11 +172,9 @@ message MsgUpdateParamsResponse {}
 // MsgCommunityPoolSpend defines a message for sending tokens from the community
 // pool to another account. This message is typically executed via a governance
 // proposal with the governance module being the executing authority.
-
-// Deprecated: Use x/protocolpool module's MsgCommunityPoolSpend instead
-// Since: cosmos-sdk 0.50
+//
+// Since: cosmos-sdk 0.47
 message MsgCommunityPoolSpend {
-  option deprecated             = true;
   option (cosmos.msg.v1.signer) = "authority";
   option (amino.name)           = "cosmos-sdk/distr/MsgCommunityPoolSpend";
 
@@ -198,14 +189,41 @@ message MsgCommunityPoolSpend {
   ];
 }
 
+// MsgWithdrawTokenizeShareRecordReward withdraws tokenize share rewards for a specific record
+message MsgWithdrawTokenizeShareRecordReward {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name)           = "cosmos-sdk/distr/MsgWithdrawTokenizeShareRecordReward";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner_address = 1 [(gogoproto.moretags) = "yaml:\"owner_address\""];
+  uint64 record_id     = 2;
+}
+
+// MsgWithdrawTokenizeShareRecordReward defines the Msg/WithdrawTokenizeShareRecordReward response type.
+message MsgWithdrawTokenizeShareRecordRewardResponse {}
+
+// MsgWithdrawAllTokenizeShareRecordReward withdraws tokenize share rewards or all
+// records owned by the designated owner
+message MsgWithdrawAllTokenizeShareRecordReward {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name)           = "cosmos-sdk/distr/MsgWithdrawAllTokenizeShareRecordReward";
+
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner_address = 1 [(gogoproto.moretags) = "yaml:\"owner_address\""];
+}
+
+// MsgWithdrawAllTokenizeShareRecordRewardResponse defines the Msg/WithdrawTokenizeShareRecordReward response type.
+message MsgWithdrawAllTokenizeShareRecordRewardResponse {}
+
 // MsgCommunityPoolSpendResponse defines the response to executing a
 // MsgCommunityPoolSpend message.
 //
-// Deprecated
-// Since: cosmos-sdk 0.50
-message MsgCommunityPoolSpendResponse {
-  option deprecated = true;
-}
+// Since: cosmos-sdk 0.47
+message MsgCommunityPoolSpendResponse {}
 
 // DepositValidatorRewardsPool defines the request structure to provide
 // additional rewards to delegators from a specific validator.

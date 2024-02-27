@@ -29,6 +29,7 @@ const (
 	Query_DelegatorValidators_FullMethodName         = "/cosmos.distribution.v1beta1.Query/DelegatorValidators"
 	Query_DelegatorWithdrawAddress_FullMethodName    = "/cosmos.distribution.v1beta1.Query/DelegatorWithdrawAddress"
 	Query_CommunityPool_FullMethodName               = "/cosmos.distribution.v1beta1.Query/CommunityPool"
+	Query_TokenizeShareRecordReward_FullMethodName   = "/cosmos.distribution.v1beta1.Query/TokenizeShareRecordReward"
 )
 
 // QueryClient is the client API for Query service.
@@ -54,12 +55,10 @@ type QueryClient interface {
 	DelegatorValidators(ctx context.Context, in *QueryDelegatorValidatorsRequest, opts ...grpc.CallOption) (*QueryDelegatorValidatorsResponse, error)
 	// DelegatorWithdrawAddress queries withdraw address of a delegator.
 	DelegatorWithdrawAddress(ctx context.Context, in *QueryDelegatorWithdrawAddressRequest, opts ...grpc.CallOption) (*QueryDelegatorWithdrawAddressResponse, error)
-	// Deprecated: Do not use.
 	// CommunityPool queries the community pool coins.
-	//
-	// Deprecated: Prefer to use x/protocolpool module's CommunityPool rpc method.
-	// Since: cosmos-sdk 0.50
 	CommunityPool(ctx context.Context, in *QueryCommunityPoolRequest, opts ...grpc.CallOption) (*QueryCommunityPoolResponse, error)
+	// TokenizeShareRecordReward queries the tokenize share record rewards
+	TokenizeShareRecordReward(ctx context.Context, in *QueryTokenizeShareRecordRewardRequest, opts ...grpc.CallOption) (*QueryTokenizeShareRecordRewardResponse, error)
 }
 
 type queryClient struct {
@@ -151,10 +150,18 @@ func (c *queryClient) DelegatorWithdrawAddress(ctx context.Context, in *QueryDel
 	return out, nil
 }
 
-// Deprecated: Do not use.
 func (c *queryClient) CommunityPool(ctx context.Context, in *QueryCommunityPoolRequest, opts ...grpc.CallOption) (*QueryCommunityPoolResponse, error) {
 	out := new(QueryCommunityPoolResponse)
 	err := c.cc.Invoke(ctx, Query_CommunityPool_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) TokenizeShareRecordReward(ctx context.Context, in *QueryTokenizeShareRecordRewardRequest, opts ...grpc.CallOption) (*QueryTokenizeShareRecordRewardResponse, error) {
+	out := new(QueryTokenizeShareRecordRewardResponse)
+	err := c.cc.Invoke(ctx, Query_TokenizeShareRecordReward_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -184,12 +191,10 @@ type QueryServer interface {
 	DelegatorValidators(context.Context, *QueryDelegatorValidatorsRequest) (*QueryDelegatorValidatorsResponse, error)
 	// DelegatorWithdrawAddress queries withdraw address of a delegator.
 	DelegatorWithdrawAddress(context.Context, *QueryDelegatorWithdrawAddressRequest) (*QueryDelegatorWithdrawAddressResponse, error)
-	// Deprecated: Do not use.
 	// CommunityPool queries the community pool coins.
-	//
-	// Deprecated: Prefer to use x/protocolpool module's CommunityPool rpc method.
-	// Since: cosmos-sdk 0.50
 	CommunityPool(context.Context, *QueryCommunityPoolRequest) (*QueryCommunityPoolResponse, error)
+	// TokenizeShareRecordReward queries the tokenize share record rewards
+	TokenizeShareRecordReward(context.Context, *QueryTokenizeShareRecordRewardRequest) (*QueryTokenizeShareRecordRewardResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -226,6 +231,9 @@ func (UnimplementedQueryServer) DelegatorWithdrawAddress(context.Context, *Query
 }
 func (UnimplementedQueryServer) CommunityPool(context.Context, *QueryCommunityPoolRequest) (*QueryCommunityPoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommunityPool not implemented")
+}
+func (UnimplementedQueryServer) TokenizeShareRecordReward(context.Context, *QueryTokenizeShareRecordRewardRequest) (*QueryTokenizeShareRecordRewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TokenizeShareRecordReward not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -420,6 +428,24 @@ func _Query_CommunityPool_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TokenizeShareRecordReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenizeShareRecordRewardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TokenizeShareRecordReward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_TokenizeShareRecordReward_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TokenizeShareRecordReward(ctx, req.(*QueryTokenizeShareRecordRewardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -466,6 +492,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CommunityPool",
 			Handler:    _Query_CommunityPool_Handler,
+		},
+		{
+			MethodName: "TokenizeShareRecordReward",
+			Handler:    _Query_TokenizeShareRecordReward_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
